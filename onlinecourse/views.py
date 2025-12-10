@@ -145,7 +145,12 @@ def show_exam_result(request, course_id, submission_id):
     selected_choices = submission.choices.all()
     score = 0
     question_results = []
-    for question in course.question_set.all():
+    
+    # Get all questions from all lessons in the course
+    lessons = course.lesson_set.all()
+    questions = Question.objects.filter(lesson__in=lessons)
+    
+    for question in questions:
         selected_choice = None
         for choice in question.choice_set.all():
             if choice in selected_choices:
@@ -163,8 +168,8 @@ def show_exam_result(request, course_id, submission_id):
         
         question_results.append(question_result)
     
-    total_points = sum([q.grade_points for q in course.question_set.all()])
-    pass_line = total_points * 0.8
+    total_points = sum([q.grade_points for q in questions])
+    pass_line = total_points * 0.8 if total_points > 0 else 0
     context = {
         'course': course,
         'submission': submission,
