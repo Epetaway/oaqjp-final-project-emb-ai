@@ -95,9 +95,50 @@ class Enrollment(models.Model):
     rating = models.FloatField(default=5.0)
 
 
-# One enrollment could have multiple submission
-# One submission could have multiple choices
-# One choice could belong to multiple submissions
+# <HINT> A sample model method to calculate if learner get enough score to pass course
+# <HINT> Check if learner passed exam with score equal or greater than 80
+# def is_passed(self):
+#     if self.score >= 80:
+#         return True
+#     else:
+#         return False
+
+
+# Question model
+class Question(models.Model):
+    # Foreign key to lesson
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    # question text
+    question_text = models.CharField(max_length=300)
+    # question grade/mark
+    grade_points = models.IntegerField(default=1)
+
+    def __str__(self):
+        return self.question_text
+
+
+# Choice model
+class Choice(models.Model):
+    # Foreign key to question
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    # Choice text
+    choice_text = models.CharField(max_length=200)
+    # Indicate if this choice is correct
+    is_correct = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.choice_text
+
+
+# Submission model
+class Submission(models.Model):
+    # Foreign key to enrollment
+    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
+    # Many-to-many relationship with Choice
+    choices = models.ManyToManyField(Choice)
+
+    def __str__(self):
+        return f"Submission for {self.enrollment.user.username} in {self.enrollment.course.name}"
 #class Submission(models.Model):
 #    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
 #    choices = models.ManyToManyField(Choice)

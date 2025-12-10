@@ -50,7 +50,29 @@
                     </div>
                 {% endfor %}
             </div>
-            <!-- Course detail template changes go here -->
+            <!-- Exam section -->
+            {% if user.is_authenticated %}
+            <div class="card mt-4">
+                <div class="card-header"><h5>Exam</h5></div>
+                <div class="card-body">
+                    <form action="{% url 'onlinecourse:submit' course.id %}" method="POST">
+                        {% csrf_token %}
+                        {% for question in course.question_set.all %}
+                            <div class="form-group">
+                                <h6>{{ question.question_text }}</h6>
+                                {% for choice in question.choice_set.all %}
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="choice_{{ choice.id }}" name="choice_{{ question.id }}" value="{{ choice.id }}" class="custom-control-input" required>
+                                        <label class="custom-control-label" for="choice_{{ choice.id }}">{{ choice.choice_text }}</label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary">Submit Exam</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
     </div>
 </body>
 </html>
